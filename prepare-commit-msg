@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+from typing import List
+from os import path
+import os
+import re
+import subprocess
+import sys
+
+
+HOME_DIR = os.environ["HOME"]
+LOG_FILE = path.join(HOME_DIR, "dict.log")
+
+
+def log_search_subject(filename, subject) -> List[str]:
+    logs = []
+    with open(filename, "r") as f:
+        for line in f:
+            lsubject = line.split("\t")[1]
+            if subject.startswith(lsubject):
+                logs.append(line)
+    return logs
+
+
+def get_branch_name() -> str:
+    try:
+        cp = subprocess.run(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+            capture_output=True,
+            check=True,
+            encoding="utf-8",
+        )
+    except Exception as e:
+        raise RuntimeError("unable to get current git branch") from e
+
+    if not cp.stdout:
+        raise RuntimeError("unable to get current git branch:no output")
+
+    return cp.stdout
+
+
+def write_commit_message(filename, logs: List[str]):
+    cur_contents = ''
+    with open(filename, "r") as f:
+        cur_contents = f.read()
+    with open(filename, "w") as f:
+        for line in logs:
+            f.write(line)
+
+        f.write(cur_contents)
+
+
+def prepare_commit_message(filename):
+    branch = get_branch_name()
+    if branch is None:
+        sys.exit(0)
+    logs = log_search_subject(LOG_FILE, branch)
+    if logs is None:
+        sys.exit(0)
+    write_commit_message(filename, logs)
+    sys.exit(0)
+
+
+def is_new_commit(sys_argv):
+    if len(sys_argv) == 2:
+        return True
+    return False
+    
+
+
+if __name__ == "__main__":
+    if is_new_commit:
+        prepare_commit_message(sys.argv[1])
