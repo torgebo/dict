@@ -4,6 +4,8 @@
 #
 # Its canonical open-source location is:
 #   https://google.github.io/styleguide/pylintrc
+#
+# Released under https://creativecommons.org/licenses/by/3.0/
 
 [MASTER]
 
