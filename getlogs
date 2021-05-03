@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-function getlogs {
-    # Search log file by regexp pattern.
-    grep $1 $HOME/dict.log
-}
-
