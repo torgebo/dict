@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -ux
+
+python -m doctest $1
+python -m mypy $1
+python -m pytype $1
+python -m pylint --rcfile test_utils/pylintrc $1
