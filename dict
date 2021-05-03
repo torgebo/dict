@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-./dict.py $@
+$HOME/dict/dict.py $@
